@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <system.webServer>
+    <!-- Specify the handlers for Python (Flask) -->
+    <handlers>
+      <add name="PythonHandler" path="*" verb="*" modules="IsapiModule" scriptProcessor="C:\path\to\python\python.exe|C:\path\to\your\app\app.py" resourceType="Unspecified" />
+    </handlers>
+
+    <!-- Set up the application root -->
+    <documentRoot>
+      C:\path\to\your\app
+    </documentRoot>
+
+    <!-- Setup the application pool to be able to handle Python -->
+    <applicationPool>
+      <add name="MyAppPool" managedRuntimeVersion="v4.0" />
+    </applicationPool>
+
+    <!-- Serve static files like images, js, and CSS -->
+    <staticContent>
+      <mimeMap fileExtension=".woff2" mimeType="font/woff2" />
+      <mimeMap fileExtension=".woff" mimeType="application/font-woff" />
+      <mimeMap fileExtension=".ttf" mimeType="application/x-font-ttf" />
+      <mimeMap fileExtension=".svg" mimeType="image/svg+xml" />
+      <!-- add other static content types as necessary -->
+    </staticContent>
+
+    <!-- Rewrite for Flask routing -->
+    <rewrite>
+      <rules>
+        <rule name="FlaskApp" stopProcessing="true">
+          <match url="(.*)" />
+          <action type="Rewrite" url="/app.py/{R:1}" />
+        </rule>
+      </rules>
+    </rewrite>
+  </system.webServer>
+
+  <appSettings>
+    <!-- Optional: Environment variables for Flask app -->
+    <add key="FLASK_APP" value="app.py" />
+    <add key="FLASK_ENV" value="production" />
+  </appSettings>
+</configuration>
